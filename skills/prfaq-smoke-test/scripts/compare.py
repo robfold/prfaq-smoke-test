@@ -95,6 +95,10 @@ def compare(argv):
     for col in ("variant", "visitors", a.metric):
         if col not in rows[0]:
             sys.exit(f"error: missing column '{col}' (have: {', '.join(rows[0])})")
+    names = [r["variant"].strip() for r in rows]
+    dupes = sorted({n for n in names if names.count(n) > 1})
+    if dupes:
+        sys.exit(f"error: variant listed more than once: {', '.join(dupes)} (sum each variant into one row)")
 
     variants = []
     for r in rows:
