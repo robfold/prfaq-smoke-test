@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Smoke test</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --fg: #16181d;
+    --muted: #5b6270;
+    --line: #e3e6eb;
+    --accent: #1f5eff;
+    --accent-fg: #ffffff;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #111317;
+      --fg: #eef0f3;
+      --muted: #a3aab6;
+      --line: #2a2e36;
+      --accent: #6f95ff;
+      --accent-fg: #0b0d10;
+    }
+  }
+  [hidden] { display: none !important; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 17px/1.55 system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  }
+  main { max-width: 640px; margin: 0 auto; padding: 32px 16px 48px; }
+  .brand { font-weight: 700; letter-spacing: 0.01em; margin-bottom: 48px; }
+  h1 { font-size: clamp(30px, 7vw, 44px); line-height: 1.15; margin: 0 0 16px; }
+  .sub { font-size: 19px; color: var(--muted); margin: 0 0 28px; }
+  .points { padding: 0; margin: 0 0 32px; list-style: none; }
+  .points li { padding: 12px 0 12px 28px; border-top: 1px solid var(--line); position: relative; }
+  .points li::before { content: "✓"; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+  button { font: inherit; cursor: pointer; border-radius: 10px; }
+  .cta { width: 100%; padding: 16px 20px; border: 0; background: var(--accent); color: var(--accent-fg); font-weight: 700; font-size: 18px; }
+  .price { text-align: center; color: var(--muted); margin: 12px 0 0; }
+  footer { margin-top: 64px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; }
+  dialog { width: min(480px, calc(100% - 32px)); border: 1px solid var(--line); border-radius: 14px; padding: 24px; background: var(--bg); color: var(--fg); }
+  dialog::backdrop { background: rgb(0 0 0 / 0.5); }
+  dialog h2 { margin: 0 0 8px; font-size: 22px; }
+  label { display: block; margin: 16px 0 4px; font-weight: 600; }
+  input[type="email"] { width: 100%; margin-top: 6px; padding: 12px; font: inherit; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); }
+  .fine { font-size: 14px; color: var(--muted); }
+  .actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+  .actions button { padding: 12px 16px; border: 1px solid var(--accent); background: var(--accent); color: var(--accent-fg); font-weight: 700; }
+  .actions .ghost { background: transparent; color: var(--fg); border-color: var(--line); font-weight: 400; }
+</style>
+</head>
+<body>
+<!-- product: identical in every variant. Change it in all three files at once or not at all. -->
+<script type="application/json" id="product">
+{
+  "lang": "en",
+  "name": "[Product]",
+  "price": "Planned price: [price]",
+  "endpoint": "",
+  "footer": "[Company] · [contact or privacy link text]",
+  "door": {
+    "title": "Not open yet",
+    "body": "We haven't built [Product] yet. We're checking whether people want it before we do. Leave your email and we'll write once, when it opens.",
+    "emailLabel": "Email",
+    "promise": "We'll use this address only to tell you when [Product] opens.",
+    "submit": "Tell me when it opens",
+    "close": "No thanks",
+    "thanks": "Thanks, you're on the list. We'll write once, when it opens."
+  }
+}
+</script>
+<!-- angle: the only block that differs between a.html, b.html, and c.html. -->
+<script type="application/json" id="angle">
+{
+  "variant": "a",
+  "headline": "[One reason to buy, 10 words or fewer]",
+  "subheadline": "[Who it is for and what they get, one sentence]",
+  "points": [
+    "[Support for this reason]",
+    "[Support for this reason]",
+    "[Support for this reason]"
+  ],
+  "cta": "[Action verb + outcome]"
+}
+</script>
+
+<main>
+  <div class="brand" data-text="product.name"></div>
+  <h1 data-text="angle.headline"></h1>
+  <p class="sub" data-text="angle.subheadline"></p>
+  <ul class="points" data-list="angle.points"></ul>
+  <button class="cta" id="cta" type="button" data-text="angle.cta"></button>
+  <p class="price" data-text="product.price"></p>
+  <footer data-text="product.footer"></footer>
+</main>
+
+<dialog id="door">
+  <form id="door-form">
+    <h2 data-text="product.door.title"></h2>
+    <p data-text="product.door.body"></p>
+    <label for="door-email" data-text="product.door.emailLabel"></label>
+    <input id="door-email" type="email" name="email" required autocomplete="email">
+    <p class="fine" data-text="product.door.promise"></p>
+    <div class="actions">
+      <button type="submit" data-text="product.door.submit"></button>
+      <button type="button" class="ghost" data-close data-text="product.door.close"></button>
+    </div>
+  </form>
+  <div id="door-thanks" hidden>
+    <p data-text="product.door.thanks"></p>
+    <div class="actions"><button type="button" class="ghost" data-close>OK</button></div>
+  </div>
+</dialog>
+
+<script>
+(() => {
+  const read = (id) => JSON.parse(document.getElementById(id).textContent);
+  const data = { product: read("product"), angle: read("angle") };
+  const get = (path) => path.split(".").reduce((o, k) => (o == null ? o : o[k]), data);
+
+  document.documentElement.lang = data.product.lang || "en";
+  document.title = data.angle.headline + " · " + data.product.name;
+
+  document.querySelectorAll("[data-text]").forEach((el) => {
+    const value = get(el.dataset.text);
+    if (value) el.textContent = value;
+    else el.hidden = true;
+  });
+  document.querySelectorAll("[data-list]").forEach((el) => {
+    (get(el.dataset.list) || []).forEach((text) => {
+      const li = document.createElement("li");
+      li.textContent = text;
+      el.appendChild(li);
+    });
+  });
+
+  const variant = String(data.angle.variant || "unknown");
+  const newId = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+  let vid;
+  try {
+    vid = localStorage.getItem("smoke_vid");
+    if (!vid) {
+      vid = newId();
+      localStorage.setItem("smoke_vid", vid);
+    }
+  } catch {
+    vid = newId();
+  }
+
+  const query = new URLSearchParams(location.search);
+  const utm = {};
+  ["utm_source", "utm_medium", "utm_campaign", "utm_content"].forEach((k) => {
+    if (query.get(k)) utm[k] = query.get(k);
+  });
+
+  // Every event lands in window.__smokeEvents for local checks.
+  // The email goes only to product.endpoint, never to analytics.
+  window.__smokeEvents = [];
+  const track = (event, extra) => {
+    const base = { event, variant, vid, ts: new Date().toISOString(), path: location.pathname, ...utm };
+    window.__smokeEvents.push(base);
+    console.info("[smoke]", event, variant);
+    if (Array.isArray(window.dataLayer)) window.dataLayer.push({ event: "smoke_" + event, smoke_variant: variant });
+    const url = data.product.endpoint;
+    if (!url) return;
+    const body = JSON.stringify({ ...base, ...extra });
+    const sent = navigator.sendBeacon && navigator.sendBeacon(url, new Blob([body], { type: "text/plain" }));
+    if (!sent) {
+      fetch(url, { method: "POST", body, keepalive: true, headers: { "content-type": "text/plain" } })
+        .catch((err) => console.warn("[smoke] send failed", event, err));
+    }
+  };
+
+  track("view");
+
+  const door = document.getElementById("door");
+  const form = document.getElementById("door-form");
+  document.getElementById("cta").addEventListener("click", () => {
+    track("cta_click");
+    door.showModal();
+  });
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    track("signup", { email: form.elements.email.value.trim() });
+    form.hidden = true;
+    document.getElementById("door-thanks").hidden = false;
+  });
+  door.querySelectorAll("[data-close]").forEach((b) => b.addEventListener("click", () => door.close()));
+})();
+</script>
+</body>
+</html>

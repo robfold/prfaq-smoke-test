@@ -1,0 +1,10 @@
+{
+  "name": "prfaq-smoke-test",
+  "version": "0.1.0",
+  "description": "Write a PR/FAQ, turn it into three fake-door landing pages, and let a small equal ad test pick the angle worth building.",
+  "author": {
+    "name": "Rob"
+  },
+  "license": "MIT",
+  "repository": "https://github.com/robfold/prfaq-smoke-test"
+}

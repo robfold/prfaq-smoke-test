@@ -1,0 +1,16 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "prfaq-smoke-test",
+  "description": "PR/FAQ first, then three landing pages and a small ad test, before you build.",
+  "owner": {
+    "name": "Rob"
+  },
+  "plugins": [
+    {
+      "name": "prfaq-smoke-test",
+      "description": "Working Backwards PR/FAQ plus a three-angle fake-door landing page smoke test with a comparison script.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}
