@@ -117,7 +117,7 @@ def compare(argv):
         rate = v["x"] / v["n"] if v["n"] else float("nan")
         lo, hi = wilson(v["x"], v["n"], 0.05)
         cost = f"{v['spend'] / v['x']:,.2f}" if v["spend"] is not None and v["x"] else "-"
-        v["rate"] = rate
+        v["rate"], v["lo"] = rate, lo
         print(f"{v['name']:<10}{v['n']:>9}{v['x']:>12}{rate:>8.2%}   {lo:>6.2%} – {hi:<6.2%}  {cost:>10}")
 
     print(f"\npairwise two-proportion z-tests, alpha {a.alpha} split over {len(pairs)} pairs = {alpha_pair:.4f} each")
@@ -149,6 +149,9 @@ def compare(argv):
                                     if k != leader_i and k not in beats[leader_i]]
         verdict = f"TIE: {', '.join(tied)} cannot be told apart at this sample size"
     print(f"\nverdict: {verdict}")
+    if verdict.startswith("WINNER") and a.min_rate is not None and leader["lo"] < a.min_rate:
+        print(f"note: {leader['name']}'s interval starts at {leader['lo']:.2%}, under the bar {a.min_rate:.2%}. "
+              "More traffic could put it below the bar; treat the build decision as provisional.")
 
 
 if __name__ == "__main__":

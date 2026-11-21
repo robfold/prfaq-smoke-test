@@ -45,9 +45,9 @@ Read [references/landing-pages.md](references/landing-pages.md). Fill the `produ
 
 The CTA opens a **fake door**: an honest panel saying the product is not available yet, with an optional waitlist email. It never takes payment.
 
-Open each page in a browser, click the CTA, submit a test email, and watch the events.
+Then run `python3 scripts/check_pages.py a.html b.html c.html`. It confirms the files differ only inside the `angle` block, then opens each page headless, clicks the CTA, submits a test email, and reads the events. It intercepts every POST, so no test event reaches the user's storage.
 
-Done when: `diff a.html b.html` and `diff a.html c.html` show changes inside the `angle` block only, and each page fires `view`, `cta_click`, and `signup` with its own variant id.
+Done when: the script prints `structure: PASS` and `events: PASS`. If it prints `events: UNVERIFIED` because Playwright or its browser cannot be installed, click through each page by hand as the reference describes and write in `test-plan.md` that the event check was manual. Step 5 starts after two PASS lines or a recorded manual check.
 
 ### 5. Fix the rules before launch
 
@@ -63,7 +63,7 @@ Done when: three live URLs load, events from each arrive where the user stores t
 
 ### 7. Read the result and decide
 
-Export per-variant counts to a CSV and run `python3 scripts/compare.py results.csv` with the minimums and bar from `test-plan.md`. Report each variant's rate with its interval, cost per signup, and the verdict line. A variant under its minimum visitors makes the whole test `UNDECIDED`, and the test plan's rules decide whether to extend it.
+Export per-variant counts to a CSV and run `python3 scripts/compare.py results.csv` with the minimums and bar from `test-plan.md`. Report each variant's rate with its interval, cost per signup, the verdict line, and any `note:` line under it. A note means the winner's interval reaches below the bar, so the build decision is provisional. A variant under its minimum visitors makes the whole test `UNDECIDED`, and the test plan's rules decide whether to extend it.
 
 Write the decision into `prfaq.md`: build with angle X, change the offer, drop it, or undecided. If building, the winning angle becomes the PR headline. Keep the losing angles and their numbers in the record.
 

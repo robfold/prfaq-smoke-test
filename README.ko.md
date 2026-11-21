@@ -58,7 +58,7 @@ npx skills add robfold/prfaq-smoke-test
 
 에이전트는 모든 것을 내 컴퓨터 안에서 쓰고 만듭니다. 페이지 공개, 이메일 수집, 광고비 집행은 각각 내가 명시적으로 허락해야 진행합니다.
 
-비교 스크립트는 Python 3만 있으면 됩니다. 랜딩페이지는 빌드 단계와 의존성이 없습니다.
+비교 스크립트는 Python 3만 있으면 됩니다. 랜딩페이지는 빌드 단계와 의존성이 없습니다. 페이지 점검 스크립트(`scripts/check_pages.py`)는 클릭 시험에 Playwright를 씁니다(`pip install playwright && playwright install chromium`). Playwright가 없으면 세 페이지 비교만 하고, 클릭 시험은 「확인 안 됨」으로 표시합니다.
 
 ## 다른 방법이 맞을 때
 

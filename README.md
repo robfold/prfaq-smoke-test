@@ -58,7 +58,7 @@ Tell your agent "write a PR/FAQ and three landing pages for this idea", "run a s
 
 The agent writes and builds everything locally. Publishing the pages, collecting emails, and spending on ads each wait for your explicit go-ahead.
 
-The comparison script needs only Python 3. The landing page needs no build step and no dependencies.
+The comparison script needs only Python 3. The landing page needs no build step and no dependencies. The page checker (`scripts/check_pages.py`) uses Playwright for its click test (`pip install playwright && playwright install chromium`); without it, the checker still compares the three pages and marks the click test as unverified.
 
 ## When to use something else
 
