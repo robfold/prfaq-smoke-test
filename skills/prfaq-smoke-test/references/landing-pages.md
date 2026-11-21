@@ -38,7 +38,16 @@ Count visitors as unique `vid` values with a `view` event, not raw page loads. T
 
 ## Local check
 
-Serve the folder (`python3 -m http.server`) and open each page. Click the CTA, submit a test email, and read `window.__smokeEvents` in the console: it should list `view`, `cta_click`, `signup` with the page's variant. With an endpoint set, confirm the three events arrived there. Then run `diff a.html b.html` and `diff a.html c.html`: only lines inside the `angle` block may differ.
+Run the checker on the three files:
+
+```
+python3 scripts/check_pages.py a.html b.html c.html
+```
+
+- `structure` compares the files outside the `angle` block and checks that the variant ids are distinct. It needs only Python.
+- `events` needs Playwright (`pip install playwright && playwright install chromium`). It serves the folder locally, opens each page headless, clicks the CTA, submits `check@example.invalid`, and checks the events and what was posted. Every POST is intercepted and answered locally, so the user's storage receives no test events. It relies on the template's ids `#cta`, `#door`, `#door-email`, and `#door-thanks`; keep them when restyling.
+
+When Playwright cannot run, check by hand. Serve the folder (`python3 -m http.server`), open each page, click the CTA, submit a test email, and read `window.__smokeEvents` in the console: it should list `view`, `cta_click`, `signup` with the page's variant and no email. With an endpoint set, a manual check sends real test events, so open the pages with `?utm_source=internal` and drop those events before counting. Write in `test-plan.md` that the check was manual.
 
 ## Launch
 

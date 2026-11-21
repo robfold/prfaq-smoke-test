@@ -55,6 +55,8 @@ The script prints each variant's rate with a 95% Wilson interval, cost per conve
 | `WINNER` | One variant beats each of the others. | Build with that angle as the PR headline. |
 | `TIE` | The top variants cannot be told apart. | They pull alike. Choose on cost per signup or fit, or test the top two again. |
 
+With `--min-rate` set, a `WINNER` can carry a `note:` line: the winner's interval starts under the bar, so more traffic could put it below. Record that build decision as provisional.
+
 The verdict describes the data. The decision is the user's, written into `prfaq.md` with the counts.
 
 ## Habits that keep the result honest
