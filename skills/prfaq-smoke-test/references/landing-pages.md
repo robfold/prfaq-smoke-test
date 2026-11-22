@@ -9,7 +9,7 @@ The test compares messages, so everything except the message stays fixed: same l
 - `product`: name, price line, footer, the fake-door panel text, and the event `endpoint`. It is byte-identical in all three files.
 - `angle`: `variant` (`a`, `b`, `c`), `headline`, `subheadline`, three `points`, and `cta`. It is the only block that changes.
 
-Fill `product` in the template once, copy it to `a.html`, `b.html`, `c.html`, then fill each `angle`. For a non-English page, set `product.lang` and translate the panel text in `product.door`; the template's own words all live in the JSON blocks.
+Fill `product` in the template once, copy it to `a.html`, `b.html`, `c.html`, then fill each `angle`. For a non-English page, set `product.lang` and translate the panel text in `product.door`. Two things sit outside the JSON: set `<html lang>` to the same code as `product.lang`, and `<title>` to the product name, both before copying. Browsers show them before the script runs, and link previews read only them. Every other word on the page lives in the JSON blocks.
 
 If the user wants a different design, change the template once before copying, so the three pages still share every line outside `angle`.
 
@@ -57,7 +57,7 @@ Get the user's go-ahead first; publishing, collecting emails, and ad spend all r
 - **Ads**: one ad set per variant. Same audience, placement, schedule, and budget; same image or video if any. The ad's text repeats its page's headline. Tag each ad's URL with `utm_content=a|b|c`.
 - **Even spend**: use a fixed budget per ad set and turn off settings that move budget to the ad the platform thinks is winning. Those settings pick a winner on thin data and starve the other variants.
 - **Same time**: run the three in parallel, start and stop together.
-- **Without ads**: if traffic comes from one shared source (a newsletter, a community post), send it to a small router page that picks `a`, `b`, or `c` at random, remembers the pick so a returning visitor sees the same page, and keeps the query string. Random assignment replaces message match in that case.
+- **Without ads**: if traffic comes from one shared source (a newsletter, a community post), send it to a small router page that picks `a`, `b`, or `c` at random, remembers the pick so a returning visitor sees the same page, and keeps the query string. Random assignment replaces message match in that case. Mail the link only to people the law lets you mail (see the marketing-mail check below).
 
 ```html
 <script>
@@ -75,5 +75,6 @@ Get the user's go-ahead first; publishing, collecting emails, and ad spend all r
 ## Before spending
 
 - **Privacy notice**: who collects the email, for what, how to be removed. Local law may ask for more (GDPR in the EU, PIPA in Korea, and others).
+- **Marketing mail and messages**: many places require the recipient's prior consent before promotional email or messages, such as Korea (Network Act Art. 50) and the EU for most consumer email. Korea also bans collecting email addresses from websites with automated tools (Art. 50-2). The US CAN-SPAM Act allows sending without prior consent but requires a working opt-out. Check the rule for the recipients' country before any mail carries a link to the pages, and record the check in `test-plan.md`.
 - **Ad policy**: ad platforms reject offers that misrepresent availability. Pages that say "coming soon" or "join the waitlist" plainly, before asking for anything, are the honest form.
 - **Regulated categories**: health, medical, finance, supplements, and similar fields often need review or pre-approval of ad claims. Check the rules for the user's country and category before the ads run.
