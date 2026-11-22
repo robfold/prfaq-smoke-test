@@ -1,10 +1,13 @@
 <!doctype html>
+<!-- Fill the lang attribute and the title element together with the product block:
+     lang = the same code as product.lang, title = the product name.
+     Both stay identical in all three pages; the script refines the title per angle after load. -->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex">
-<title>Smoke test</title>
+<title>[Product]</title>
 <style>
   :root {
     --bg: #ffffff;
@@ -70,7 +73,8 @@
     "promise": "We'll use this address only to tell you when [Product] opens.",
     "submit": "Tell me when it opens",
     "close": "No thanks",
-    "thanks": "Thanks, you're on the list. We'll write once, when it opens."
+    "thanks": "Thanks, you're on the list. We'll write once, when it opens.",
+    "ok": "OK"
   }
 }
 </script>
@@ -113,7 +117,7 @@
   </form>
   <div id="door-thanks" hidden>
     <p data-text="product.door.thanks"></p>
-    <div class="actions"><button type="button" class="ghost" data-close>OK</button></div>
+    <div class="actions"><button type="button" class="ghost" data-close data-text="product.door.ok"></button></div>
   </div>
 </dialog>
 
@@ -168,11 +172,21 @@
     if (Array.isArray(window.dataLayer)) window.dataLayer.push({ event: "smoke_" + event, smoke_variant: variant });
     const url = data.product.endpoint;
     if (!url) return;
+    // A failed send must never stop the page: sendBeacon throws on file:// and on bad URLs.
     const body = JSON.stringify({ ...base, ...extra });
-    const sent = navigator.sendBeacon && navigator.sendBeacon(url, new Blob([body], { type: "text/plain" }));
+    let sent = false;
+    try {
+      sent = Boolean(navigator.sendBeacon && navigator.sendBeacon(url, new Blob([body], { type: "text/plain" })));
+    } catch (err) {
+      console.warn("[smoke] beacon failed", event, err);
+    }
     if (!sent) {
-      fetch(url, { method: "POST", body, keepalive: true, headers: { "content-type": "text/plain" } })
-        .catch((err) => console.warn("[smoke] send failed", event, err));
+      try {
+        fetch(url, { method: "POST", body, keepalive: true, headers: { "content-type": "text/plain" } })
+          .catch((err) => console.warn("[smoke] send failed", event, err));
+      } catch (err) {
+        console.warn("[smoke] send failed", event, err);
+      }
     }
   };
 
